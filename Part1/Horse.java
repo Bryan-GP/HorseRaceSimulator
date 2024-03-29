@@ -7,30 +7,31 @@
  */
 public class Horse{
     //Fields of class Horse
-    char horseSymbol;
-    String horseName;
-    double horseConfidence;
-    int DistanceTravelled;
-    boolean Fallen;
+    private char horseSymbol;//has: get, set
+    private String horseName;//has: get
+    private double horseConfidence;//has: get, set
+    private int DistanceTravelled;//has: 
+    private boolean Fallen;//has: 
 
     //Constructor of class Horse
     public Horse(char horseSymbol, String horseName, double horseConfidence){
         this.horseSymbol = horseSymbol;
-        this.horseName= horseName;
+        this.horseName = horseName;
         this.horseConfidence = horseConfidence;
         this.DistanceTravelled = 0;
         this.Fallen = false;
     }
     
     /*Methods*/
-    public void fall(){}
-    public double getConfidence(){}
-    public int getDistanceTravelled(){}
-    public String getName(){}
-    public char getSymbol(){}
-    public void goBackToStart(){}
-    public boolean hasFallen(){}
-    public void moveForward(){}
-    public void setConfidence(double newConfidence){}
-    public void setSymbol(char newSymbol){}
+    public double getConfidence(){ return this.horseConfidence; }
+    public int getDistanceTravelled(){ return this.DistanceTravelled; }
+    public String getName(){ return this.horseName; }
+    public char getSymbol(){ return this.horseSymbol; }
+    public boolean hasFallen(){ return this.Fallen; }
+    public void setConfidence(double newConfidence){ this.horseConfidence = newConfidence; }
+    public void setSymbol(char newSymbol){ this.horseSymbol = newSymbol; }
+    public void fall(){ this.Fallen = true; }
+    public void goBackToStart(){ this.DistanceTravelled = 0; }
+    public void moveForward(){ this.DistanceTravelled += 1; }
+
 }
