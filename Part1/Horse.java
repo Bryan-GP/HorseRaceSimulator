@@ -5,13 +5,14 @@
  * @author Bryan Piedra-Ojeda 230347627
  * @version 1
  */
+
 public class Horse{
     //Fields of class Horse
     private char horseSymbol;//has: get, set
     private String horseName;//has: get
     private double horseConfidence;//has: get, set
-    private int DistanceTravelled;//has: 
-    private boolean Fallen;//has: 
+    private int DistanceTravelled;//has: get
+    private boolean Fallen;//has: get
 
     //Constructor of class Horse
     public Horse(char horseSymbol, String horseName, double horseConfidence){
@@ -35,3 +36,5 @@ public class Horse{
     public void moveForward(){ this.DistanceTravelled += 1; }
 
 }
+
+
