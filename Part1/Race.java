@@ -83,11 +83,14 @@ public class Race
             printRace();
             
             //if any of the three horses has won the race is finished
-            if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse) )
-            {
+            if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse) || lane1Horse.hasFallen() && lane2Horse.hasFallen() && lane3Horse.hasFallen()){
                 finished = true;
             }
-           
+            if (finished){
+                String name = raceWonBy(lane1Horse)? lane1Horse.getName():raceWonBy(lane2Horse)?lane2Horse.getName():raceWonBy(lane3Horse)?lane3Horse.getName():"None";
+                System.out.println(name + " Won");
+            }
+        
             //wait for 100 milliseconds
             try{ 
                 TimeUnit.MILLISECONDS.sleep(100);
