@@ -62,8 +62,7 @@ public class Race
      * then repeatedly moved forward until the 
      * race is finished
      */
-    public void startRace()
-    {
+    public void startRace(){
         //declare a local variable to tell us when the race is finished
         boolean finished = false;
         
@@ -72,28 +71,26 @@ public class Race
         lane2Horse.goBackToStart();
         lane3Horse.goBackToStart();
                       
-        while (!finished)
-        {
+        while (!finished){
             //move each horse
             moveHorse(lane1Horse);
             moveHorse(lane2Horse);
-            moveHorse(lane3Horse);
-                        
+            moveHorse(lane3Horse);  
             //print the race positions
             printRace();
-            
             //if any of the three horses has won the race is finished
             if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse) || lane1Horse.hasFallen() && lane2Horse.hasFallen() && lane3Horse.hasFallen()){
                 finished = true;
             }
             if (finished){
                 String name = raceWonBy(lane1Horse)? lane1Horse.getName():raceWonBy(lane2Horse)?lane2Horse.getName():raceWonBy(lane3Horse)?lane3Horse.getName():"None";
-                System.out.println(name + " Won");
+                System.out.println("And the winner is "+name);
+                return; 
             }
-        
-            //wait for 100 milliseconds
+            //wait for 100 milliseconds=
             try{ 
                 TimeUnit.MILLISECONDS.sleep(100);
+                System.out.print("\033\143");//this clears the console
             }catch(Exception e){}
         }
     }
@@ -192,7 +189,7 @@ public class Race
         //else print the horse's symbol
         if(theHorse.hasFallen())
         {
-            System.out.print('\u2322');
+            System.out.print("\b\u274C");
         }
         else
         {
@@ -202,8 +199,8 @@ public class Race
         //print the spaces after the horse
         multiplePrint(' ',spacesAfter);
         
-        //print the | for the end of the track
-        System.out.print('|');
+        //print the | {horseName} ({current confidence}) for the end of the track
+        System.out.print("| "+ theHorse.getName()+ " (Current confidence "+ theHorse.getConfidence() +")" );
     }
         
     
