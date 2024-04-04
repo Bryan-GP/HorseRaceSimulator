@@ -121,6 +121,7 @@ public class Race
             if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
             {
                 theHorse.fall();
+                theHorse.setConfidence( theHorse.getConfidence() - 0.1 );
             }
         }
     }

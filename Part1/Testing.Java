@@ -1,7 +1,12 @@
-
+import java.util.Scanner;
+import java.util.Stack;
 
 public class Testing{
     public static void main(String[] args){
+        part1_2();
+    }
+
+    public static void part1_2(){
         Race race = new Race(10);
         Horse horse1 = new Horse('\u265E',"Test1",0.6);
         race.addHorse(horse1, 1);
