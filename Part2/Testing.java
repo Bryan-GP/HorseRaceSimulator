@@ -2,7 +2,7 @@
 
 public class Testing{
     public static void main(String[] args){
-        Choice choice = new Choice();
+        new GUI();
         //part1_2();
     }
 
@@ -10,9 +10,9 @@ public class Testing{
         Race race = new Race(10);
         Horse horse1 = new Horse('\u265E',"Test1",0.6);
         race.addHorse(horse1, 1);
-        Horse horse2 = new Horse('\u265E',"Test2",0.6);
+        Horse horse2 = new Horse('\u2658',"Test2",0.6);
         race.addHorse(horse2, 2);
-        Horse horse3 = new Horse('\u265D',"Test3",0.4);
+        Horse horse3 = new Horse('\u265E',"Test3",0.4);
         race.addHorse(horse3, 3);
         race.startRace();
     }
