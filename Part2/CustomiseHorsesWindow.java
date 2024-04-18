@@ -1,27 +1,55 @@
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.ListIterator;
 import javax.swing.*;
 
 public class CustomiseHorsesWindow{
+    //private static final char Symbol = 0;
     JFrame frame = new JFrame(); 
-    JPanel panel;
-    public CustomiseHorsesWindow(int HorseCount){
-        panel = new JPanel(new GridLayout(HorseCount,2));
-        ArrayList<JButton> horses = new ArrayList<>();
-        ArrayList<Horse> horseList = new ArrayList<>();
-        for(int i=0; i<HorseCount; i++){ horses.add(new JButton("Horse "+ (i+1))); }
-        ListIterator<JButton> i = horses.listIterator();
-        while(i.hasNext()){
-            JButton b = i.next();
+    //JPanel panel;
+    public static int HorseCount;
+    public static double DefaultConfidence = 0.5;
+    public static char DefaultSymbol = '\u265E';
+    public static ArrayList<JButton> horses; 
+
+    public CustomiseHorsesWindow(){
+        JPanel panel = new JPanel(new GridLayout(HorseCount,2));
+        for(int i=0; i<horses.size(); i++){
+            JButton b = horses.get(i);
+            String windowName = "Horse "+(i+1);
             b.addActionListener(e -> {
                 if(e.getSource() == b){ 
-                    //frame.dispose();
-                    //make a horse page then use sliders and stuff to adjust horse stats.
-                    HorseWindow window = new HorseWindow(b.getText());
-                    horseList.add(window.horse);
-                  }
+                    char Symbol = DefaultSymbol;
+                    String DefaultName = b.getText();
+                    double Confidence = DefaultConfidence;
+                    new HorseWindow(windowName, b, new Horse( Symbol, DefaultName, Confidence));
+                    frame.dispose();
+                }
+            });
+            panel.add(b);
+        }
+        frame.add(panel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Horse Racing Simulation");
+        frame.setSize(500, 420);
+        frame.setVisible(true);
+    }
+    public CustomiseHorsesWindow(int HorseCount){
+        CustomiseHorsesWindow.HorseCount = HorseCount;
+        JPanel panel = new JPanel(new GridLayout(HorseCount,2));
+        horses = new ArrayList<>();
+        for(int i=0; i<HorseCount; i++){ horses.add(new JButton("Horse"+ (i+1))); }
+        for(int i=0; i<horses.size(); i++){
+            JButton b = horses.get(i);
+            String windowName = "Horse "+(i+1);
+            b.addActionListener(e -> {
+                if(e.getSource() == b){ 
+                    char Symbol = DefaultSymbol;
+                    String DefaultName = b.getText();
+                    double Confidence = DefaultConfidence;
+                    frame.dispose();
+                    new HorseWindow(windowName, b, new Horse( Symbol, DefaultName, Confidence));
+                }
             });
             panel.add(b);
         }
@@ -32,3 +60,5 @@ public class CustomiseHorsesWindow{
         frame.setVisible(true);
     }
 }
+
+/* */ 
