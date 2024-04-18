@@ -9,24 +9,25 @@ public class HorseWindow  implements ActionListener{
     Horse horse;
     JButton Button;
 
-
     JRadioButton WhiteHorseButton;
     JRadioButton BlackHorseButton;
     JTextField HorseName;
     JButton SubmitButton;
     JSlider ConfidenceSlider;
+    CustomiseHorsesWindow CHW;
     
-
-    public HorseWindow(String windowName, JButton button, Horse horse){
+    public HorseWindow(CustomiseHorsesWindow CHW, String windowName, JButton button, Horse horse){
         this.frame = new JFrame("Horse Racing Simulation");
         this.horse = horse;
         this.Button = button;
+        this.CHW = CHW;
 
         //panel1
         JPanel panel1 = new JPanel(new BorderLayout());
         JPanel InsidePanel = new JPanel(new GridBagLayout());
         JLabel ConfidenceLabel = new JLabel("Confidence: ");
-        //confidence Setting;
+
+        //confidence slider Setting;
         ConfidenceSlider = new JSlider(0,100,50);
         ConfidenceSlider.add(ConfidenceLabel);
         ConfidenceSlider.setPreferredSize(new Dimension(400,50));
@@ -63,8 +64,7 @@ public class HorseWindow  implements ActionListener{
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
-
-
+        
         //adding slider
         gbc.gridx=0;
         gbc.gridy=0;
@@ -116,17 +116,17 @@ public class HorseWindow  implements ActionListener{
 
     @Override   
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == WhiteHorseButton){ this.horse.setSymbol('\u265E'); }
-        else if(e.getSource() == BlackHorseButton){ this.horse.setSymbol('\u2658'); }
-        else if(e.getSource() == SubmitButton){
+        if(e.getSource() == this.WhiteHorseButton){ this.horse.setSymbol('\u265E'); }
+        else if(e.getSource() == this.BlackHorseButton){ this.horse.setSymbol('\u2658'); }
+        else if(e.getSource() == this.SubmitButton){
             this.frame.dispose();
             this.horse.setName(HorseName.getText());
             this.horse.setConfidence( ((double) ConfidenceSlider.getValue())/100);
             System.out.println("Confidence: "+this.horse.getConfidence());
             System.out.println("Name: "+this.horse.getName());
             System.out.println("Symbol: "+this.horse.getSymbol());
-            this.Button.setText(this.horse.getSymbol()+" "+this.horse.getName()+" "+this.horse.getConfidence());
-            new CustomiseHorsesWindow();
+            //this.Button.setText(this.horse.getSymbol()+" "+this.horse.getName()+" "+this.horse.getConfidence());
+            CHW.ChangeTextOnButton(this.horse.getSymbol(),this.horse.getName(),this.horse.getConfidence(), Button);
         }
     }
 }
