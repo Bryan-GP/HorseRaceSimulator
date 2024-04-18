@@ -121,7 +121,7 @@ public class Race
             if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
             {
                 theHorse.fall();
-                theHorse.setConfidence( theHorse.getConfidence() - 0.1 );
+                theHorse.setConfidence( Math.floor((theHorse.getConfidence() - 0.1 )*100)/100);
             }
         }
     }
@@ -136,6 +136,7 @@ public class Race
     {
         if (theHorse.getDistanceTravelled() == raceLength)
         {
+            theHorse.setConfidence(Math.floor((theHorse.getConfidence()+0.1)*100)/100);
             return true;
         }
         else
