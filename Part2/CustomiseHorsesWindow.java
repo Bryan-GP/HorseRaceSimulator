@@ -19,11 +19,12 @@ public class CustomiseHorsesWindow{
             String windowName = "Horse "+(i+1);
             b.addActionListener(e -> {
                 if(e.getSource() == b){ 
+                    frame.dispose();
                     char Symbol = DefaultSymbol;
-                    String DefaultName = b.getText();
+                    String DefaultName = windowName;
                     double Confidence = DefaultConfidence;
                     new HorseWindow(windowName, b, new Horse( Symbol, DefaultName, Confidence));
-                    frame.dispose();
+                    
                 }
             });
             panel.add(b);
@@ -44,10 +45,10 @@ public class CustomiseHorsesWindow{
             String windowName = "Horse "+(i+1);
             b.addActionListener(e -> {
                 if(e.getSource() == b){ 
+                    frame.dispose();
                     char Symbol = DefaultSymbol;
                     String DefaultName = b.getText();
                     double Confidence = DefaultConfidence;
-                    frame.dispose();
                     new HorseWindow(windowName, b, new Horse( Symbol, DefaultName, Confidence));
                 }
             });
@@ -61,4 +62,4 @@ public class CustomiseHorsesWindow{
     }
 }
 
-/* */ 
+/* Testing Branch now*/ 
