@@ -9,7 +9,7 @@
 public class Horse{
     //Fields of class Horse
     private char horseSymbol;//has: get, set
-    private String horseName;//has: get
+    private String horseName;//has: get ////added set in part2
     private double horseConfidence;//has: get, set
     private int DistanceTravelled;//has: get
     private boolean Fallen;//has: get
@@ -29,6 +29,7 @@ public class Horse{
     public String getName(){ return this.horseName; }
     public char getSymbol(){ return this.horseSymbol; }
     public boolean hasFallen(){ return this.Fallen; }
+    public void setName(String name){ this.horseName = name; }
     public void setConfidence(double newConfidence){ this.horseConfidence = newConfidence; }
     public void setSymbol(char newSymbol){ this.horseSymbol = newSymbol; }
     public void fall(){ this.Fallen = true; }
