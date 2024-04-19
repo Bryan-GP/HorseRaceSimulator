@@ -122,11 +122,11 @@ public class HorseWindow  implements ActionListener{
             this.frame.dispose();
             this.horse.setName(HorseName.getText());
             this.horse.setConfidence( ((double) ConfidenceSlider.getValue())/100);
-            System.out.println("Confidence: "+this.horse.getConfidence());
-            System.out.println("Name: "+this.horse.getName());
-            System.out.println("Symbol: "+this.horse.getSymbol());
+            //System.out.println("Confidence: "+this.horse.getConfidence());
+            //System.out.println("Name: "+this.horse.getName());
+            //System.out.println("Symbol: "+this.horse.getSymbol());
             //this.Button.setText(this.horse.getSymbol()+" "+this.horse.getName()+" "+this.horse.getConfidence());
-            CHW.ChangeTextOnButton(this.horse.getSymbol(),this.horse.getName(),this.horse.getConfidence(), Button);
+            CHW.ChangeTextOnButton( this.horse.getSymbol(), this.horse.getName(), this.horse.getConfidence(), this.Button);
         }
     }
 }
