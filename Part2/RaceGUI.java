@@ -12,3 +12,5 @@ public class RaceGUI {
 
     }
 }//make this calss show the race with all the horses.
+
+//in RacingGUI branch now

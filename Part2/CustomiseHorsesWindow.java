@@ -55,5 +55,3 @@ public class CustomiseHorsesWindow  {
         frame.setVisible(true);
     }
 }
-
-/* Testing Branch now*/ 
