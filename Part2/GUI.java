@@ -2,7 +2,12 @@
 //import java.io.FileReader;
 //import java.io.IOException;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import javax.swing.*;
 
@@ -10,7 +15,11 @@ public class GUI{
     JTextArea RaceOutput;
     Race race;
     LinkedHashMap<Integer, Horse> horses;
-    public GUI(){ LaunchWindow(); }
+    boolean StartHorseRace;
+    public GUI(){ 
+        this.StartHorseRace = false;
+        LaunchWindow(); 
+    }
     public void LaunchWindow(){
         JFrame frame = new JFrame();
         JPanel panel2 = new JPanel();
@@ -74,11 +83,8 @@ public class GUI{
         SubmitButton.addActionListener(e->{
             if(e.getSource() == SubmitButton){
                 frame.dispose();
-                //this.SaveHorses();
                 this.horses = ReadyHorses;
-                //RaceGUI();//ReadyHorses);
-                new Clock();
-                //StartRaceGUI();
+                this.StartHorseRace = true;
             }
         });
         panel.add(SubmitButton);
@@ -109,8 +115,69 @@ public class GUI{
         race = new Race(10, this.horses, this.RaceOutput);
         race.startRace();
     }
-}
-    /*public LinkedHashMap<Integer, Horse> getTextInHorses(){
+
+    public void Clock(){
+        //Calendar calendar;
+        JLabel timeLabel;
+        JLabel dayLabel;
+        JLabel dateLabel;
+        SimpleDateFormat timeFormat;
+        SimpleDateFormat dayFormat;
+        SimpleDateFormat dateFormat;
+        String time;
+        String day;
+        String date;
+        JFrame frame = new JFrame();
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("My Clock Program");
+        frame.setLayout(new FlowLayout());
+        frame.setSize(350,200);
+        frame.setResizable(false);
+
+        timeFormat = new SimpleDateFormat("hh:mm:ss a");
+        dayFormat = new SimpleDateFormat("EEEE");
+        dateFormat = new SimpleDateFormat("MMMMM dd, yyyy");
+
+        timeLabel = new JLabel();
+        timeLabel.setFont(new Font("Verdana",Font.PLAIN,50));
+        timeLabel.setForeground(new Color(0x00FF00));
+        timeLabel.setBackground(Color.black);
+        timeLabel.setOpaque(true);
+
+        dayLabel = new JLabel();
+        dayLabel.setFont(new Font("Ink Free",Font.PLAIN,35));
+
+        dateLabel = new JLabel();
+        dateLabel.setFont(new Font("Ink Free",Font.PLAIN,25));
+
+
+        frame.add(timeLabel);
+        frame.add(dayLabel);
+        frame.add(dateLabel);
+        frame.setVisible(true);
+
+        //setTime(timeLabel,dayLabel,dateLabel,timeFormat,dayFormat,dateFormat);
+    
+        while(true) {
+            time = timeFormat.format(Calendar.getInstance().getTime());
+            timeLabel.setText(time);
+
+            day = dayFormat.format(Calendar.getInstance().getTime());
+            dayLabel.setText(day);
+
+            date = dateFormat.format(Calendar.getInstance().getTime());
+            dateLabel.setText(date);
+            
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public LinkedHashMap<Integer, Horse> getTextInHorses(){
         horses = new LinkedHashMap<>();
         try(BufferedReader reader = new BufferedReader(new FileReader("Horses.txt"))){
             String[] horse;
@@ -124,6 +191,9 @@ public class GUI{
             }
         }catch(IOException e){}
         return horses;
+    }
+}
+    /*
     }*/
 
 
