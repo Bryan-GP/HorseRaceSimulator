@@ -14,13 +14,13 @@ public class HorseWindow  implements ActionListener{
     JTextField HorseName;
     JButton SubmitButton;
     JSlider ConfidenceSlider;
-    CustomiseHorsesWindow CHW;
+    JFrame CHWframe;
     
-    public HorseWindow(CustomiseHorsesWindow CHW, String windowName, JButton button, Horse horse){
+    public HorseWindow( JFrame CHWframe, String windowName, JButton button, Horse horse){
         this.frame = new JFrame("Horse Racing Simulation");
         this.horse = horse;
         this.Button = button;
-        this.CHW = CHW;
+        this.CHWframe = CHWframe;
 
         //panel1
         JPanel panel1 = new JPanel(new BorderLayout());
@@ -126,7 +126,8 @@ public class HorseWindow  implements ActionListener{
             //System.out.println("Name: "+this.horse.getName());
             //System.out.println("Symbol: "+this.horse.getSymbol());
             //this.Button.setText(this.horse.getSymbol()+" "+this.horse.getName()+" "+this.horse.getConfidence());
-            CHW.ChangeTextOnButton( this.horse.getSymbol(), this.horse.getName(), this.horse.getConfidence(), this.Button);
+            Button.setText( this.horse.getSymbol()+" "+  this.horse.getName()+" "+ this.horse.getConfidence());
+            CHWframe.setVisible(true);
         }
     }
 }
