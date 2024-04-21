@@ -1,12 +1,14 @@
 
-
 public class Testing{
     public static void main(String[] args){
         new GUI();
+        //new Clock();
+        
         //part1_2();
     }
 
     public static void part1_2(){
+        /* 
         Race race = new Race(10);
         Horse horse1 = new Horse('\u265E',"Test1",0.6);
         race.addHorse(horse1, 1);
@@ -14,7 +16,7 @@ public class Testing{
         race.addHorse(horse2, 2);
         Horse horse3 = new Horse('\u265E',"Test3",0.4);
         race.addHorse(horse3, 3);
-        race.startRace();
+        race.startRace();*/
     }
 
     public static void part1_1(){
