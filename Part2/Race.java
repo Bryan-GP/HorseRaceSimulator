@@ -11,8 +11,7 @@ import java.lang.Math;
  * @author McFarewell
  * @version 1.0
  */
-public class Race
-{
+public class Race{
     private int raceLength;
     private LinkedHashMap<Integer, Horse> horses;
     private String Text;
@@ -26,8 +25,7 @@ public class Race
      * 
      * @param distance the length of the racetrack (in metres/yards...)
      */
-    public Race(int distance, LinkedHashMap<Integer, Horse> horses, JTextArea TextArea)
-    {
+    public Race(int distance, LinkedHashMap<Integer, Horse> horses, JTextArea TextArea){
         // initialise instance variables
         this.raceLength = distance;
         this.horses = horses;

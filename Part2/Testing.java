@@ -1,8 +1,9 @@
 
 public class Testing{
     public static void main(String[] args){
-        new GUI();
-        //new Clock();
+
+        //GUI.RaceGUI();
+        GUI.Clock();
         
         //part1_2();
     }
