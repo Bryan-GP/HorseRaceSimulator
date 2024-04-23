@@ -1,9 +1,7 @@
-///import javax.swing.SwingUtilities;
 
-public class Testing {
-    public static void main(String[] args){
+public class Testing{
+    public static void main(String[] args){ 
         new Race();
-        //new GUI();
     }
 
     public static void part1_2(){
