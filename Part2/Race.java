@@ -41,8 +41,8 @@ public class Race {
 
     private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();;
 
-    private int raceLength = 20;
-    //private LinkedHashMap<Integer, Horse> horses;
+    private int TrackLength = 20;
+    private char TrackChar = '=';
     private String Text;
     private boolean finished;
     private int numberFallen = 0;
@@ -168,9 +168,7 @@ public class Race {
 
         NumberOfHorses.addActionListener(e->{ ChooseNumberOfHorses(); });
         CostumiseHorses.addActionListener(e->{ CustomiseHorsesWindow(); });
-        CostumiseTrack.addActionListener(e->{
-            //TODO  /// preferably add something about changing the length and the keys used for the tracks. 
-        });
+        CostumiseTrack.addActionListener(e->{ CustomiseTrack(); });
 
         RaceOptions.add(NumberOfHorses);
         RaceOptions.add(CostumiseHorses);
@@ -192,7 +190,7 @@ public class Race {
         frame.setVisible(true);
     }
 
-    public void ChooseNumberOfHorses(){
+    public synchronized void ChooseNumberOfHorses(){
         JFrame ChooseNumberOfHorsesFrame = new JFrame();
         JPanel panel2 = new JPanel();
         panel2.setBackground(new Color(243, 235, 233)); // Light Gray
@@ -223,7 +221,7 @@ public class Race {
         ChooseNumberOfHorsesFrame.setVisible(true);
     }
 
-    public void CustomiseHorsesWindow(){
+    public synchronized void CustomiseHorsesWindow(){
         JFrame CustomiseHorsesFrame = new JFrame();
         double DefaultConfidence = 0.5;
         char DefaultSymbol = '\u265E';
@@ -261,94 +259,97 @@ public class Race {
         CustomiseHorsesFrame.setSize(500, 420);
         CustomiseHorsesFrame.setVisible(true);
     }
-    /*
-    public void startRace(){
-        finished = false;
-        for( int i=1; i<=horses.size(); i++ ){ horses.get(i).goBackToStart(); }
-        updateRace();
-        SwingUtilities.invokeLater(() -> {
-            RaceOutput.setText(Text);
+
+    public synchronized void CustomiseTrack(){
+        JFrame CustomiseTrackFrame = new JFrame();
+        JPanel panel2 = new JPanel();
+        panel2.setBackground(new Color(243, 235, 233)); // Light Gray
+        panel2.setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        //confidence slider Setting;
+        JLabel NumberOfHorsesLabel = new JLabel("Length Of Track: ");
+        JSlider ConfidenceSlider = new JSlider(0,100,50);
+        ConfidenceSlider.setValue(20);
+        ConfidenceSlider.setPreferredSize(new Dimension(400,50));
+        ConfidenceSlider.setPaintTicks(true);
+        ConfidenceSlider.setMinorTickSpacing(2);
+        ConfidenceSlider.setPaintTrack(true);
+        ConfidenceSlider.setMajorTickSpacing(25);
+        ConfidenceSlider.setPaintLabels(true);
+        ConfidenceSlider.setSnapToTicks(true);
+
+        JLabel TrackCharacterLabel = new JLabel("type a character for the Track: ");
+        JTextField TrackCharacter = new JTextField(TrackChar);
+        TrackCharacter.setText(TrackChar+"");
+        TrackCharacter.setSize(20, 10);
+
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(e -> {
+            TrackChar = TrackCharacter.getText().charAt(0);
+            TrackChar = TrackChar != '\u0000'?TrackChar:'=';
+            TrackLength = ConfidenceSlider.getValue();
+            CustomiseTrackFrame.dispose();
         });
-        while(!finished){
-            RaceOutput.setVisible(false);
-            //System.out.println("");
-            for( int i=1; i<=horses.size(); i++ ){ 
-                Horse h = horses.get(i);
-                if(h.hasFallen()){
-                    numberFallen += 1;
-                }
-                if(raceWonBy(h)){
-                    Text += "And the winner is " + h.getName() ;
-                    finished = true;
-                    SwingUtilities.invokeLater(() -> {
-                        RaceOutput.setText(Text);
-                    });
-                    return;
-                }
-            }
-            if(numberFallen == horses.size()){
-                Text += "All the horses have fallen.";
-                
-                finished = true;
-                continue;
-            }else{
-                numberFallen = 0;
-            }
-            for( int i=1; i<=horses.size(); i++ ){ moveHorse(horses.get(i)); } 
-            updateRace();
-            System.out.println("\033\143"+Text);
-            try{ 
-                Thread.sleep(100);
-                SwingUtilities.invokeLater(() -> {
-                    RaceOutput.setText(Text);
-                    RaceOutput.setVisible(true);
-                });
-            }
-            catch(InterruptedException e){}
-        }
-        //move each horse
-    }*/
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel2.add(NumberOfHorsesLabel, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        panel2.add(ConfidenceSlider, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel2.add(TrackCharacterLabel, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        panel2.add(TrackCharacter, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        panel2.add(submitButton, gbc);
 
-    public void startRace(){
+        CustomiseTrackFrame.add(panel2, BorderLayout.CENTER);
+        CustomiseTrackFrame.setTitle("Horse Racing Simulation");
+        //ChooseNumberOfHorsesFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        CustomiseTrackFrame.setSize(1000,420);
+        CustomiseTrackFrame.setVisible(true);
+    }
+
+    public synchronized void startRace(){
         finished = false;
-        for( int i=1; i<=horses.size(); i++ ){ horses.get(i).goBackToStart(); }
-        updateRace();
-        RaceOutput.setText(Text);
+        for( int i=1; i<=horses.size(); i++ ){ 
+            Horse h = horses.get(i);
+            h.pickUpHorse();
+            h.goBackToStart();
+        }
         while(!finished){
             //System.out.println("");
             for( int i=1; i<=horses.size(); i++ ){ 
                 Horse h = horses.get(i);
-                if(h.hasFallen()){
-                    numberFallen += 1;
-                }
+                if(h.hasFallen()){ numberFallen++; }
                 if(raceWonBy(h)){
-                    updateRace();
-                    Text += "And the winner is " + h.getName() ;
                     finished = true;
+                    updateRace();
+                    Text += "And the winner is " + h.getName();
                     RaceOutput.setText(Text);
                     return;
                 }
-            }
+            } 
             if(numberFallen == horses.size()){
-                Text += "All the horses have fallen.";
-                
                 finished = true;
-                continue;
-            }else{
-                numberFallen = 0;
-            }
-            for( int i=1; i<=horses.size(); i++ ){ moveHorse(horses.get(i)); } 
-            updateRace();
-
-            try{ 
-                Thread.sleep(100);
+                updateRace();
+                Text += "All the horses have fallen.";
                 RaceOutput.setText(Text);
-                //RaceOutput.replaceRange(Text, 0, Text.length()-1);
-                System.out.println("\033\143"+Text);
-            }
-            catch(InterruptedException e){}
+                numberFallen = 0;
+                return;
+            }else{ numberFallen = 0; }
+            for( int i=1; i<=horses.size(); i++ ){ moveHorse(horses.get(i)); } 
+            //RaceOutput.setText(Text);
+            updateRace();
+            RaceOutput.setText(Text);
+            //System.out.println(Text);
         }
-        //move each horse
     }
     
     /**
@@ -358,7 +359,7 @@ public class Race {
      * 
      * @param theHorse the horse to be moved
      */
-    private void moveHorse(Horse theHorse)
+    private synchronized void moveHorse(Horse theHorse)
     {
         //if the horse has fallen it cannot move, 
         //so only run if it has not fallen
@@ -388,9 +389,9 @@ public class Race {
      * @param theHorse The horse we are testing
      * @return true if the horse has won, false otherwise.
      */
-    private boolean raceWonBy(Horse theHorse)
+    private synchronized boolean raceWonBy(Horse theHorse)
     {
-        if (theHorse.getDistanceTravelled() == raceLength)
+        if (theHorse.getDistanceTravelled() == TrackLength)
         {
             theHorse.setConfidence(Math.floor((theHorse.getConfidence()+0.1)*100)/100);
             return true;
@@ -404,12 +405,12 @@ public class Race {
     /***
      * Print the race on the terminal
      */
-    private void updateRace()
+    private synchronized void updateRace()
     {
         //System.out.print('\u000C');  //clear the terminal window
         Text = "\n\n\n\n";
         
-        multiplePrint('=',raceLength); //top edge of track
+        multiplePrint(TrackChar,TrackLength); //top edge of track
         Text +=  "\n" ; 
 
         for( int i=1; i<=horses.size(); i++ ){ 
@@ -417,7 +418,7 @@ public class Race {
             Text += "\n" ; 
         }
 
-        multiplePrint('=',raceLength); //bottom edge of track
+        multiplePrint(TrackChar,TrackLength); //bottom edge of track
         Text += "\n" ;
         //System.out.println();    
     }
@@ -428,12 +429,12 @@ public class Race {
      * |           X                      |
      * to show how far the horse has run
      */
-    private void printLane(Horse theHorse)
+    private synchronized void printLane(Horse theHorse)
     {
         //calculate how many spaces are needed before
         //and after the horse
         int spacesBefore = theHorse.getDistanceTravelled();
-        int spacesAfter = raceLength - theHorse.getDistanceTravelled();
+        int spacesAfter = TrackLength - theHorse.getDistanceTravelled();
         //print a | for the beginning of the lane
         Text +=  "|" ; 
         //System.out.print('|');
@@ -466,7 +467,7 @@ public class Race {
      * 
      * @param aChar the character to Print
      */
-    private void multiplePrint(char aChar, int times){
+    private synchronized void multiplePrint(char aChar, int times){
         int i = 0;
         while (i < times){
             Text +=  aChar ; 
