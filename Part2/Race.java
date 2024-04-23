@@ -39,7 +39,7 @@ public class Race {
     private JMenuItem CostumiseHorses;
     private JMenuItem CostumiseTrack;
 
-    private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();;
+    private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();
 
     private int TrackLength = 20;
     private char TrackChar = '=';
@@ -62,22 +62,22 @@ public class Race {
         frame.setLayout(new FlowLayout());
         frame.setBackground(Color.BLACK);
         frame.setLocationRelativeTo(null);
+        frame.setMaximumSize(new Dimension(600,600));
+        frame.setMinimumSize(new Dimension(600,600));
 
         //making the main output
         RaceOutput = new JTextArea();
         RaceOutput.setSize(500,600);
         RaceOutput.setFont(new Font( "Arial", Font.PLAIN, 15));
         RaceOutput.setLineWrap(true);
-        //RaceOutput.set try to get a bottom part of the editor
         RaceOutput.setWrapStyleWord(true);
         RaceOutput.setForeground(new Color(0x10FF10));
         RaceOutput.setBackground(Color.BLACK);
-        RaceOutput.setOpaque(true);
 
         //allowing Scrolling
-        scrollPane = new JScrollPane(RaceOutput);
-        scrollPane.setPreferredSize(new Dimension(450,450));
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        //scrollPane = new JScrollPane(RaceOutput);
+        //scrollPane.setPreferredSize(new Dimension(450,450));
+        //scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         //font label and 
         fontLabel = new JLabel("Font Size");
@@ -186,7 +186,7 @@ public class Race {
         frame.add(colourButton);
         frame.add(fontBox);
         frame.add(StartButton);
-        frame.add(scrollPane);
+        //frame.add(scrollPane);
         frame.setVisible(true);
     }
 
@@ -282,7 +282,7 @@ public class Race {
         ConfidenceSlider.setSnapToTicks(true);
 
         JLabel TrackCharacterLabel = new JLabel("type a character for the Track: ");
-        JTextField TrackCharacter = new JTextField(TrackChar);
+        JTextField TrackCharacter = new JTextField(10);
         TrackCharacter.setText(TrackChar+"");
         TrackCharacter.setSize(20, 10);
 
@@ -345,10 +345,9 @@ public class Race {
                 return;
             }else{ numberFallen = 0; }
             for( int i=1; i<=horses.size(); i++ ){ moveHorse(horses.get(i)); } 
+            //update()
             //RaceOutput.setText(Text);
-            updateRace();
-            RaceOutput.setText(Text);
-            //System.out.println(Text);
+            
         }
     }
     
