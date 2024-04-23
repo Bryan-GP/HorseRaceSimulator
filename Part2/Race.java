@@ -18,14 +18,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class Race {
+    private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();
     private JFrame frame = new JFrame("HORSE RACING SIMULATION"); 
     private JTextArea RaceOutput;
 
     private JScrollPane scrollPane;
-    private JSpinner fontSizeSpinner;
     private JLabel fontLabel;
+    private JSpinner fontSizeSpinner;
     private JButton colourButton;
-    private JButton StartButton;
     private JComboBox<?> fontBox;
     private JMenuBar MenuBar;
     private JMenu SavesMenu;
@@ -39,7 +39,7 @@ public class Race {
     private JMenuItem CostumiseHorses;
     private JMenuItem CostumiseTrack;
 
-    private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();
+    private JButton StartButton;
 
     private int TrackLength = 20;
     private char TrackChar = '=';
@@ -75,9 +75,9 @@ public class Race {
         RaceOutput.setBackground(Color.BLACK);
 
         //allowing Scrolling
-        //scrollPane = new JScrollPane(RaceOutput);
-        //scrollPane.setPreferredSize(new Dimension(450,450));
-        //scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane = new JScrollPane(RaceOutput);
+        scrollPane.setPreferredSize(new Dimension(450,450));
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         //font label and 
         fontLabel = new JLabel("Font Size");
@@ -98,13 +98,6 @@ public class Race {
             Color color = JColorChooser.showDialog(null, "Choose a color", Color.black);
             RaceOutput.setForeground(color);
         });
-
-        //startRace//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        StartButton = new JButton("START");
-        StartButton.addActionListener(e->{
-            startRace();
-        });
-
 
         //font changer
         String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
@@ -180,13 +173,19 @@ public class Race {
         MenuBar.add(SavesMenu);
         MenuBar.add(RaceOptions);
 
+        //startRace//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        StartButton = new JButton("START");
+        StartButton.addActionListener(e->{
+            startRace();
+        });
+
         frame.setJMenuBar(MenuBar);
         frame.add(fontLabel);
         frame.add(fontSizeSpinner);
         frame.add(colourButton);
         frame.add(fontBox);
         frame.add(StartButton);
-        //frame.add(scrollPane);
+        frame.add(scrollPane);
         frame.setVisible(true);
     }
 
