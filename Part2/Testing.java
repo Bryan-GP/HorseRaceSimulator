@@ -1,11 +1,9 @@
+///import javax.swing.SwingUtilities;
 
-public class Testing{
+public class Testing {
     public static void main(String[] args){
-
-        //GUI.RaceGUI();
-        GUI.Clock();
-        
-        //part1_2();
+        new Race();
+        //new GUI();
     }
 
     public static void part1_2(){

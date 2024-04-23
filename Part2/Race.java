@@ -1,8 +1,4 @@
-import java.util.LinkedHashMap;
 
-import javax.swing.JTextArea;
-
-import java.lang.Math;
 
 /**
  * A three-horse race, each horse running in its own lane
@@ -11,58 +7,348 @@ import java.lang.Math;
  * @author McFarewell
  * @version 1.0
  */
-public class Race{
-    private int raceLength;
-    private LinkedHashMap<Integer, Horse> horses;
+
+import java.awt.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+
+public class Race {
+    private JFrame frame = new JFrame("HORSE RACING SIMULATION"); 
+    private JTextArea RaceOutput;
+
+    private JScrollPane scrollPane;
+    private JSpinner fontSizeSpinner;
+    private JLabel fontLabel;
+    private JButton colourButton;
+    private JButton StartButton;
+    private JComboBox<?> fontBox;
+    private JMenuBar MenuBar;
+    private JMenu SavesMenu;
+    private JMenuItem openItem;
+    private JMenuItem saveItem;
+    private JMenuItem exitItem;
+
+    private JMenu RaceOptions;
+    private JMenuItem NumberOfHorses;
+    private int NumberOfHorsesInt = 2;
+    private JMenuItem CostumiseHorses;
+    private JMenuItem CostumiseTrack;
+
+    private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();;
+
+    private int raceLength = 20;
+    //private LinkedHashMap<Integer, Horse> horses;
     private String Text;
-    private JTextArea TextArea;
-    public boolean finished;
+    private boolean finished;
+    private int numberFallen = 0;
+    private static final double DefaultConfidence = 0.5;
+    private static final char DefaultSymbol = '\u265E';
+    private static final String DefaultName = "HORSE";
     
+    public Race(){
 
-    /**
-     * Constructor for objects of class Race
-     * Initially there are no horses in the lanes
-     * 
-     * @param distance the length of the racetrack (in metres/yards...)
-     */
-    public Race(int distance, LinkedHashMap<Integer, Horse> horses, JTextArea TextArea){
-        // initialise instance variables
-        this.raceLength = distance;
-        this.horses = horses;
-        this.TextArea = TextArea; 
+        //default values for Horses.
+        horses.put(1,new Horse(DefaultSymbol,DefaultName+"1",DefaultConfidence));
+        horses.put(2,new Horse(DefaultSymbol,DefaultName+"2",DefaultConfidence));
 
+        //making the frame
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 600);
+        frame.setLayout(new FlowLayout());
+        frame.setBackground(Color.BLACK);
+        frame.setLocationRelativeTo(null);
+
+        //making the main output
+        RaceOutput = new JTextArea();
+        RaceOutput.setSize(500,600);
+        RaceOutput.setFont(new Font( "Arial", Font.PLAIN, 15));
+        RaceOutput.setLineWrap(true);
+        //RaceOutput.set try to get a bottom part of the editor
+        RaceOutput.setWrapStyleWord(true);
+        RaceOutput.setForeground(new Color(0x10FF10));
+        RaceOutput.setBackground(Color.BLACK);
+        RaceOutput.setOpaque(true);
+
+        //allowing Scrolling
+        scrollPane = new JScrollPane(RaceOutput);
+        scrollPane.setPreferredSize(new Dimension(450,450));
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        //font label and 
+        fontLabel = new JLabel("Font Size");
+
+        //font size changer
+        fontSizeSpinner = new JSpinner();
+        fontSizeSpinner.setPreferredSize(new Dimension(50,25));
+        fontSizeSpinner.setValue(15);
+        fontSizeSpinner.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) { RaceOutput.setFont( new Font(RaceOutput.getFont().getFamily() , Font.PLAIN, (int) fontSizeSpinner.getValue() )); }
+        });
+
+        //colour changer
+        colourButton = new JButton("Colour");
+        colourButton.addActionListener(e->{
+            new JColorChooser();
+            Color color = JColorChooser.showDialog(null, "Choose a color", Color.black);
+            RaceOutput.setForeground(color);
+        });
+
+        //startRace//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        StartButton = new JButton("START");
+        StartButton.addActionListener(e->{
+            startRace();
+        });
+
+
+        //font changer
+        String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        fontBox = new JComboBox<>(fonts);
+        fontBox.addActionListener(e->{
+            RaceOutput.setFont(new Font((String)fontBox.getSelectedItem(), Font.PLAIN, RaceOutput.getFont().getSize()));
+        });
+        fontBox.setSelectedItem("Arial");
+
+        //menu Bar
+        MenuBar = new JMenuBar();
+
+        //Saves
+        SavesMenu = new JMenu("Saves");
+        openItem = new JMenuItem("Open");
+        saveItem = new JMenuItem("Save");
+        exitItem = new JMenuItem("Exit");
+
+        saveItem.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File("."));
+            int response = fileChooser.showSaveDialog(null);
+            if(response == JFileChooser.APPROVE_OPTION){
+                File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+                try (PrintWriter writer = new PrintWriter(file)) {
+                    writer.println(RaceOutput.getText());
+                } 
+                catch (FileNotFoundException e1) { }
+            }
+        });
+        openItem.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(new File("."));
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
+            fileChooser.setFileFilter(filter);
+            int response = fileChooser.showOpenDialog(null);
+            if(response == JFileChooser.APPROVE_OPTION){
+                File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+                Scanner fileIn = null;
+                try{
+                    fileIn = new Scanner(file);
+                    if(file.isFile()){
+                        while(fileIn.hasNextLine()){
+                            String line = fileIn.nextLine() + "\n";
+                            RaceOutput.append(line);
+                        }
+                    }
+                }catch(IOException e2){}
+
+            }
+        });
+        exitItem.addActionListener(e -> {
+            System.exit(0);
+        });
+
+        //Race Options////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        RaceOptions = new JMenu("RaceOptions");
+        NumberOfHorses = new JMenuItem("NumberOfHorses");
+        CostumiseHorses = new JMenuItem("CostumiseHorses");
+        CostumiseTrack = new JMenuItem("CostumiseTrack");
+
+        NumberOfHorses.addActionListener(e->{ ChooseNumberOfHorses(); });
+        CostumiseHorses.addActionListener(e->{ CustomiseHorsesWindow(); });
+        CostumiseTrack.addActionListener(e->{
+            //TODO  /// preferably add something about changing the length and the keys used for the tracks. 
+        });
+
+        RaceOptions.add(NumberOfHorses);
+        RaceOptions.add(CostumiseHorses);
+        RaceOptions.add(CostumiseTrack);
+        SavesMenu.add(openItem);
+        SavesMenu.add(saveItem);
+        SavesMenu.add(exitItem);
+
+        MenuBar.add(SavesMenu);
+        MenuBar.add(RaceOptions);
+
+        frame.setJMenuBar(MenuBar);
+        frame.add(fontLabel);
+        frame.add(fontSizeSpinner);
+        frame.add(colourButton);
+        frame.add(fontBox);
+        frame.add(StartButton);
+        frame.add(scrollPane);
+        frame.setVisible(true);
     }
-    //removed addHorse Method
-    
-    
-    /**
-     * Start the race
-     * The horse are brought to the start and
-     * then repeatedly moved forward until the 
-     * race is finished
-     */
+
+    public void ChooseNumberOfHorses(){
+        JFrame ChooseNumberOfHorsesFrame = new JFrame();
+        JPanel panel2 = new JPanel();
+        panel2.setBackground(new Color(243, 235, 233)); // Light Gray
+        panel2.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        JComboBox<Integer> nHorses = new JComboBox<>(new Integer[] {2,3,4,5,6,7,8,9,10});
+        JLabel NumberOfHorsesLabel = new JLabel("Number of Horses: ");
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(e -> { 
+            this.NumberOfHorsesInt = nHorses.getSelectedIndex()+2;
+            ChooseNumberOfHorsesFrame.dispose();
+        });
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel2.add(NumberOfHorsesLabel, gbc);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        panel2.add(nHorses, gbc);
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        panel2.add(submitButton, gbc);
+
+        ChooseNumberOfHorsesFrame.add(panel2, BorderLayout.CENTER);
+        ChooseNumberOfHorsesFrame.setTitle("Horse Racing Simulation");
+        //ChooseNumberOfHorsesFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ChooseNumberOfHorsesFrame.setSize(420,420);
+        ChooseNumberOfHorsesFrame.setVisible(true);
+    }
+
+    public void CustomiseHorsesWindow(){
+        JFrame CustomiseHorsesFrame = new JFrame();
+        double DefaultConfidence = 0.5;
+        char DefaultSymbol = '\u265E';
+        ArrayList<JButton> HorseButtons = new ArrayList<>();;
+        horses = new LinkedHashMap<>();
+        //CustomiseHorsesWindow.HorseCount = HorseCount;
+        JPanel panel = new JPanel(new GridLayout(this.NumberOfHorsesInt+1,1)); //added 1 for the submit button
+        for(int i=0; i<this.NumberOfHorsesInt; i++){
+            HorseButtons.add(new JButton("HORSE"+(i+1)));
+            horses.put((i+1), new Horse( DefaultSymbol, "HORSE"+(i+1), DefaultConfidence) );
+        }
+        for(int i=0; i<HorseButtons.size(); i++){
+            JButton b = HorseButtons.get(i);
+            Horse h = horses.get(i+1);
+            String windowName = "HORSE"+(i+1);
+            b.addActionListener(e -> {
+                if(e.getSource() == b){ 
+                    CustomiseHorsesFrame.setVisible(false);
+                    new HorseWindow( CustomiseHorsesFrame, windowName, b, h );
+                }
+            });
+            panel.add(b);
+        }
+
+        JButton SubmitButton = new JButton("SUBMIT ");
+        SubmitButton.setBackground(new Color(333));
+        SubmitButton.addActionListener(e->{
+            CustomiseHorsesFrame.dispose();
+        });
+
+        panel.add(SubmitButton);
+        CustomiseHorsesFrame.add(panel);
+        //CustomiseHorsesFrame.setDefaultCloseOperation();
+        CustomiseHorsesFrame.setTitle("Horse Racing Simulation");
+        CustomiseHorsesFrame.setSize(500, 420);
+        CustomiseHorsesFrame.setVisible(true);
+    }
+    /*
+    public void startRace(){
+        finished = false;
+        for( int i=1; i<=horses.size(); i++ ){ horses.get(i).goBackToStart(); }
+        updateRace();
+        SwingUtilities.invokeLater(() -> {
+            RaceOutput.setText(Text);
+        });
+        while(!finished){
+            RaceOutput.setVisible(false);
+            //System.out.println("");
+            for( int i=1; i<=horses.size(); i++ ){ 
+                Horse h = horses.get(i);
+                if(h.hasFallen()){
+                    numberFallen += 1;
+                }
+                if(raceWonBy(h)){
+                    Text += "And the winner is " + h.getName() ;
+                    finished = true;
+                    SwingUtilities.invokeLater(() -> {
+                        RaceOutput.setText(Text);
+                    });
+                    return;
+                }
+            }
+            if(numberFallen == horses.size()){
+                Text += "All the horses have fallen.";
+                
+                finished = true;
+                continue;
+            }else{
+                numberFallen = 0;
+            }
+            for( int i=1; i<=horses.size(); i++ ){ moveHorse(horses.get(i)); } 
+            updateRace();
+            System.out.println("\033\143"+Text);
+            try{ 
+                Thread.sleep(100);
+                SwingUtilities.invokeLater(() -> {
+                    RaceOutput.setText(Text);
+                    RaceOutput.setVisible(true);
+                });
+            }
+            catch(InterruptedException e){}
+        }
+        //move each horse
+    }*/
 
     public void startRace(){
         finished = false;
         for( int i=1; i<=horses.size(); i++ ){ horses.get(i).goBackToStart(); }
+        updateRace();
+        RaceOutput.setText(Text);
         while(!finished){
+            //System.out.println("");
             for( int i=1; i<=horses.size(); i++ ){ 
                 Horse h = horses.get(i);
+                if(h.hasFallen()){
+                    numberFallen += 1;
+                }
                 if(raceWonBy(h)){
+                    updateRace();
                     Text += "And the winner is " + h.getName() ;
                     finished = true;
+                    RaceOutput.setText(Text);
+                    return;
                 }
+            }
+            if(numberFallen == horses.size()){
+                Text += "All the horses have fallen.";
+                
+                finished = true;
+                continue;
+            }else{
+                numberFallen = 0;
             }
             for( int i=1; i<=horses.size(); i++ ){ moveHorse(horses.get(i)); } 
             updateRace();
-            TextArea.setText(Text);
-            try{ Thread.sleep(100);}
-            catch(Exception e){}
+
+            try{ 
+                Thread.sleep(100);
+                RaceOutput.setText(Text);
+                //RaceOutput.replaceRange(Text, 0, Text.length()-1);
+                System.out.println("\033\143"+Text);
+            }
+            catch(InterruptedException e){}
         }
         //move each horse
-
-
-
     }
     
     /**
@@ -121,7 +407,7 @@ public class Race{
     private void updateRace()
     {
         //System.out.print('\u000C');  //clear the terminal window
-        Text = "";
+        Text = "\n\n\n\n";
         
         multiplePrint('=',raceLength); //top edge of track
         Text +=  "\n" ; 
@@ -153,7 +439,7 @@ public class Race{
         //System.out.print('|');
         
         //print the spaces before the horse
-        multiplePrint(' ',spacesBefore);
+        multiplePrint(' ',spacesBefore*2);
         
         //if the horse has fallen then print dead
         //else print the horse's symbol
@@ -161,12 +447,12 @@ public class Race{
             Text += "\b\u274C" ; 
             //System.out.print("\b\u274C");
         }else{
-            Text += theHorse.getSymbol(); 
+            Text += " "+theHorse.getSymbol(); 
             //System.out.print(theHorse.getSymbol());
         }
         
         //print the spaces after the horse
-        multiplePrint(' ',spacesAfter);
+        multiplePrint(' ',spacesAfter*2);
         
         //print the | {horseName} ({current confidence}) for the end of the track
         Text += "| "+ theHorse.getName()+ " (Current confidence "+ theHorse.getConfidence() +")" ;
