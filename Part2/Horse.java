@@ -29,10 +29,11 @@ public class Horse{
     public String getName(){ return this.horseName; }
     public char getSymbol(){ return this.horseSymbol; }
     public boolean hasFallen(){ return this.Fallen; }
-    public void setName(String name){ this.horseName = name; }
-    public void setConfidence(double newConfidence){ this.horseConfidence = newConfidence; }
+    public void setName(String name){ this.horseName = name; } //new
+    public void setConfidence(double newConfidence){this.horseConfidence = newConfidence>0?newConfidence:0; } //updated 
     public void setSymbol(char newSymbol){ this.horseSymbol = newSymbol; }
     public void fall(){ this.Fallen = true; }
+    public void pickUpHorse(){ this.Fallen = false; } //new 
     public void goBackToStart(){ this.DistanceTravelled = 0; }
     public void moveForward(){ this.DistanceTravelled += 1; }
 
