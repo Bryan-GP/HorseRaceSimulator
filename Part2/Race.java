@@ -176,7 +176,7 @@ public class Race {
         //startRace//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         StartButton = new JButton("START");
         StartButton.addActionListener(e->{
-            startRace();
+            startRaceGUI();
         });
 
         frame.setJMenuBar(MenuBar);
@@ -315,7 +315,7 @@ public class Race {
         CustomiseTrackFrame.setVisible(true);
     }
 
-    public synchronized void startRace(){
+    public synchronized void startRaceGUI(){
         finished = false;
         for( int i=1; i<=horses.size(); i++ ){ 
             Horse h = horses.get(i);
