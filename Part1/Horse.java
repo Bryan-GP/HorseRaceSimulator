@@ -17,7 +17,7 @@ public class Horse{
     //Constructor of class Horse
     public Horse(char horseSymbol, String horseName, double horseConfidence){
         this.horseSymbol = horseSymbol;
-        this.horseName = horseName.toUpperCase();
+        this.horseName = horseName;//.toUpperCase();
         this.horseConfidence = horseConfidence;
         this.DistanceTravelled = 0;
         this.Fallen = false;
