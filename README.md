@@ -22,12 +22,12 @@ This project was built to simulate horse racing and betting and to analyse the o
 - Horse Racing Simulation
 - includes simple instructions on boot up
 
-## Istallation
+## Installation
 1. Open Your favourite IDE
 2. Open the terminal and type the following command: `git clone https://github.com/Bryan-GP/HorseRaceSimulator`
 3. to run the project, type the following command: `java Testing`
 
-## contributing to this
+## Contributing to this
 1. Fork this repository
 2. Create a new branch
 3. Make your changes
