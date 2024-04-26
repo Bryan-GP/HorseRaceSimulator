@@ -45,7 +45,6 @@ public class Race {
     private Horse HorseBetted;
     private int BetAmount;
     private JMenuItem PlaceBet;
-    private int Coins = 100; //TODO add Currency to Virtual betting system.
 
     private JButton StatsButton;
     //private ArrayList<Double> AvgSpeeds;
@@ -137,7 +136,6 @@ public class Race {
         openItem = new JMenuItem("Open");
         saveItem = new JMenuItem("Save");
         exitItem = new JMenuItem("Exit");
-
         saveItem.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(new File("."));
@@ -169,46 +167,53 @@ public class Race {
                         }
                     }
                 }catch(IOException e2){}
-
             }
         });
         exitItem.addActionListener(e -> {
             System.exit(0);
         });
 
+        //Adds Race Options
         RaceOptions = new JMenu("RaceOptions");
         NumberOfHorses = new JMenuItem("NumberOfHorses");
         CostumiseHorses = new JMenuItem("CostumiseHorses");
         CostumiseTrack = new JMenuItem("CostumiseTrack");
-
         NumberOfHorses.addActionListener(e->{ ChooseNumberOfHorses(); });
         CostumiseHorses.addActionListener(e->{ CustomiseHorsesWindow(); });
         CostumiseTrack.addActionListener(e->{ CustomiseTrack(); });
 
+        //Adds Betting Functionality
         VirtualBetting = new JMenu("VirtualBetting");
         PlaceBet = new JMenuItem("Place Bet");
-
         PlaceBet.addActionListener(e->{ PlaceBet(); });
-
         VirtualBetting.add(PlaceBet);
 
+        //adding all the menu stuff to the MenuBar
         RaceOptions.add(NumberOfHorses);
         RaceOptions.add(CostumiseHorses);
         RaceOptions.add(CostumiseTrack);
         SavesMenu.add(openItem);
         SavesMenu.add(saveItem);
         SavesMenu.add(exitItem);
-
         MenuBar.add(SavesMenu);
         MenuBar.add(RaceOptions);
         MenuBar.add(VirtualBetting);
 
+        //Start Button
         StartButton = new JButton("START");
         StartButton.addActionListener(e->{ startRaceGUI(); });
 
-        StatsButton = new JButton("Statistics");
-        StatsButton.addActionListener(e->{ showAvgSpeed = true; });
+        //Speed Toggle
+        StatsButton = new JButton("View Stats: off");
+        StatsButton.addActionListener(e->{ 
+            showAvgSpeed = !showAvgSpeed; 
+            String word = showAvgSpeed?"on":"off";
+            StatsButton.setText("View Stats: "+word);
+        });
 
+        //TODO MAKE USE OF COINS AND WINNING TIMES FOR EACH HORSE
+
+        //Finfishing the frame
         frame.setJMenuBar(MenuBar);
         frame.add(fontLabel);
         frame.add(fontSizeSpinner);
@@ -435,9 +440,9 @@ public class Race {
 
     private void checkIfBetWon(Horse winner){
         if(winner.equals(HorseBetted)){ 
-            Text += "\nYOUR "  + BetAmount + " BET WINS!"; 
+            Text += "YOUR "  + BetAmount + " BET WINS!\n"; 
         }else{
-            Text += "\nYour bet of " + BetAmount + " has been lost.";
+            Text += "Your bet of " + BetAmount + " has been lost.\n";
         }
     }
 
@@ -458,13 +463,14 @@ public class Race {
                     if(raceWonBy(h)){
                         finished = true;
                         updateRace();
-                        Text += "And the winner is " + h.getName();
+                        Text += "\nAnd the winner is " + h.getName();
+                        WiningTimesForCurrentHorses.get(i).add(CurrentWinningTime);
+                        showWins(i, h);
                         if(VirtualBettingUp) { 
-                            Text += "\n\nYOUR BET: "+HorseBetted.getName();
+                            Text += "\n\nYOUR BET: "+HorseBetted.getName()+"\n";
                             checkIfBetWon(h); 
                         }
-                        WiningTimesForCurrentHorses.get(i).add(CurrentWinningTime);
-                        System.out.println(WiningTimesForCurrentHorses.toString());
+                        //System.out.println(WiningTimesForCurrentHorses.toString());
                         
                         RaceOutput.setText(Text);
                         return;
@@ -481,7 +487,7 @@ public class Race {
                 for( int i=1; i<=horses.size(); i++ ){ moveHorse(horses.get(i)); } 
                 try{
                     updateRace();
-                    if(VirtualBettingUp){ Text += "\n\nYOUR BET: "+HorseBetted.getName();}
+                    if(VirtualBettingUp){ Text += "\n\nYOUR BET: "+HorseBetted.getName()+"\n";}
                     RaceOutput.setText(Text);
                     Thread.sleep(100);
                 }catch(InterruptedException e){
@@ -489,6 +495,13 @@ public class Race {
                 }
             }
         }).start();
+    }
+    private synchronized void showWins(int LaneNumber, Horse h){
+        ArrayList<Double> times = WiningTimesForCurrentHorses.get(LaneNumber);
+        Text += "\nWINS ("+times.size()+"): ";
+        for(int i=0;i<times.size(); i++){
+            Text += (i+1)+": "+times.get(i)+", ";
+        }
     }
     
     
@@ -546,7 +559,7 @@ public class Race {
     private void updateRace()
     {
         
-        Text = "Steps Per Second (Sps)\n\n\n";
+        Text = "Steps Per Second (Sps)\n";
         
         multiplePrint(TrackChar,TrackLength); //top edge of track
         Text +=  "\n" ; 
@@ -560,7 +573,7 @@ public class Race {
         CurrentWinningTime = Math.floor((CurrentWinningTime+0.1)*100)/100;
         Text += "\nTIMER: "+CurrentWinningTime+"\n";
         CalculateLeadingProbablity();
-        SeeStatsForCurrentHorses();
+        veiwSpeeds();
     }
 
     //the following calaclulates the Leading horses' probablilty to win.
@@ -584,14 +597,14 @@ public class Race {
         Text += addText;
     }
 
-    private void SeeStatsForCurrentHorses(){
-        //AvgSpeeds = new ArrayList<>();
+    private void veiwSpeeds(){
+        String StatText = "";
         for (int i = 0; i < NumberOfHorsesInt; i++) {
             Horse h = horses.get(i+1);
             if(h.hasFallen()){ continue;}
-            //AvgSpeeds.add(Math.floor((CurrentWinningTime/h.getDistanceTravelled())*100)/100);
-            if(showAvgSpeed){ Text += h.getName() + "'s AVG SPEED: "+ Math.floor((CurrentWinningTime/h.getDistanceTravelled())*100)/100+"Sps\n";}
+            if(showAvgSpeed){ StatText += h.getName() + "'s AVG SPEED: "+ Math.floor((CurrentWinningTime/h.getDistanceTravelled())*100)/10+" Sps\n";}
         }
+        Text+=StatText;
 
     }
 
@@ -627,6 +640,7 @@ public class Race {
         
         //print the spaces after the horse
         multiplePrint(' ',spacesAfter*2);
+
         
         //print the | {horseName} ({current confidence}) for the end of the track
         Text += "| "+ theHorse.getName()+ " (Current confidence "+ theHorse.getConfidence() +")" ;
