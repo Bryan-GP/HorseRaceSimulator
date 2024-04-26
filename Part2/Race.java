@@ -9,12 +9,10 @@
  */
 
 import java.awt.*;
-import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class Race {
@@ -27,10 +25,6 @@ public class Race {
     private JButton colourButton;
     private JComboBox<?> fontBox;
     private JMenuBar MenuBar;
-    private JMenu SavesMenu;
-    private JMenuItem openItem;
-    private JMenuItem saveItem;
-    private JMenuItem exitItem;
 
     //horse custumisation instance variables
     private JMenu RaceOptions;
@@ -55,7 +49,7 @@ public class Race {
 
     //instance variables needed throughout the class
     private double CurrentWinningTime;
-    private LinkedHashMap<Integer, ArrayList<Double>> WiningTimesForCurrentHorses = new LinkedHashMap<>(); //TODO add Timer
+    private LinkedHashMap<Integer, ArrayList<Double>> WiningTimesForCurrentHorses = new LinkedHashMap<>();
     private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();
     private int TrackLength = 20;
     private char TrackChar = '=';
@@ -131,48 +125,6 @@ public class Race {
         //menu Bar
         MenuBar = new JMenuBar();
 
-        //Saves
-        SavesMenu = new JMenu("Saves");
-        openItem = new JMenuItem("Open");
-        saveItem = new JMenuItem("Save");
-        exitItem = new JMenuItem("Exit");
-        saveItem.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File("."));
-            int response = fileChooser.showSaveDialog(null);
-            if(response == JFileChooser.APPROVE_OPTION){
-                File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                try (PrintWriter writer = new PrintWriter(file)) {
-                    //writer.print(WiningTimesForCurrentHorses.toString())//TODO save the times and stuff
-                    //writer.println(RaceOutput.getText());
-                } 
-                catch (FileNotFoundException e1) { }
-            }
-        });
-        openItem.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setCurrentDirectory(new File("."));
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
-            fileChooser.setFileFilter(filter);
-            int response = fileChooser.showOpenDialog(null);
-            if(response == JFileChooser.APPROVE_OPTION){
-                File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                Scanner fileIn = null;
-                try{
-                    fileIn = new Scanner(file);
-                    if(file.isFile()){
-                        while(fileIn.hasNextLine()){
-                            String line = fileIn.nextLine() + "\n";
-                            RaceOutput.append(line);
-                        }
-                    }
-                }catch(IOException e2){}
-            }
-        });
-        exitItem.addActionListener(e -> {
-            System.exit(0);
-        });
-
         //Adds Race Options
         RaceOptions = new JMenu("RaceOptions");
         NumberOfHorses = new JMenuItem("NumberOfHorses");
@@ -192,10 +144,6 @@ public class Race {
         RaceOptions.add(NumberOfHorses);
         RaceOptions.add(CostumiseHorses);
         RaceOptions.add(CostumiseTrack);
-        SavesMenu.add(openItem);
-        SavesMenu.add(saveItem);
-        SavesMenu.add(exitItem);
-        MenuBar.add(SavesMenu);
         MenuBar.add(RaceOptions);
         MenuBar.add(VirtualBetting);
 
@@ -210,8 +158,6 @@ public class Race {
             String word = showAvgSpeed?"on":"off";
             StatsButton.setText("View Stats: "+word);
         });
-
-        //TODO MAKE USE OF COINS AND WINNING TIMES FOR EACH HORSE
 
         //Finfishing the frame
         frame.setJMenuBar(MenuBar);
