@@ -31,6 +31,15 @@ This project was built to simulate horse racing and betting and to analyse the o
 3. to run the project type the following command: `cd part2`
 4. then type the following command: `java Testing`
 
+## Using the Horse Racing Simulator
+- Press start to begin the race (pressing start will make 2 horses race by default)
+- Choose the number of horses you want
+- Choose the track you want
+- Choose the font you want
+- Choose the font size you want
+- Toggle the stats button to check the stats of the horses in real time.
+
+
 ## Contributing to this
 1. Fork this repository
 2. Create a new branch
