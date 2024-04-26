@@ -47,6 +47,10 @@ public class Race {
     private JMenuItem PlaceBet;
     private int Coins = 100; //TODO add Currency to Virtual betting system.
 
+    private JButton StatsButton;
+    //private ArrayList<Double> AvgSpeeds;
+    private boolean showAvgSpeed = false;
+
     //button to start the race
     private JButton StartButton;
 
@@ -79,13 +83,13 @@ public class Race {
         frame.setLayout(new FlowLayout());
         frame.setBackground(Color.BLACK);
         frame.setLocationRelativeTo(null);
-        frame.setMaximumSize(new Dimension(600,600));
-        frame.setMinimumSize(new Dimension(600,600));
+        frame.setMaximumSize(new Dimension(800,600));
+        frame.setMinimumSize(new Dimension(800,600));
 
         //making the main output
         RaceOutput = new JTextArea();
         RaceOutput.setText("Step1: Choose Horses\nStep2: Customise Horses\n(Optional) Step3: Place Bet");
-        RaceOutput.setSize(500,600);
+        RaceOutput.setSize(900,600);
         RaceOutput.setFont(new Font( "Arial", Font.PLAIN, 15));
         RaceOutput.setLineWrap(true);
         RaceOutput.setWrapStyleWord(true);
@@ -202,15 +206,20 @@ public class Race {
         StartButton = new JButton("START");
         StartButton.addActionListener(e->{ startRaceGUI(); });
 
+        StatsButton = new JButton("Statistics");
+        StatsButton.addActionListener(e->{ showAvgSpeed = true; });
+
         frame.setJMenuBar(MenuBar);
         frame.add(fontLabel);
         frame.add(fontSizeSpinner);
         frame.add(colourButton);
         frame.add(fontBox);
         frame.add(StartButton);
+        frame.add(StatsButton);
         frame.add(scrollPane);
         frame.setVisible(true);
     }
+    
 
     public void ChooseNumberOfHorses(){
         JFrame ChooseNumberOfHorsesFrame = new JFrame();
@@ -227,6 +236,7 @@ public class Race {
             NumberOfHorsesInt = nHorses.getSelectedIndex()+2;
             //make it so that the number of horses
             horses = new LinkedHashMap<>();
+            WiningTimesForCurrentHorses = new LinkedHashMap<>();
             for(int i=0; i<this.NumberOfHorsesInt; i++){
                 horses.put((i+1), new Horse( DefaultSymbol, "HORSE"+(i+1), DefaultConfidence) );
                 WiningTimesForCurrentHorses.put(i+1, new ArrayList<>());
@@ -536,7 +546,7 @@ public class Race {
     private void updateRace()
     {
         
-        Text = "\n\n\n\n";
+        Text = "Steps Per Second (Sps)\n\n\n";
         
         multiplePrint(TrackChar,TrackLength); //top edge of track
         Text +=  "\n" ; 
@@ -550,6 +560,7 @@ public class Race {
         CurrentWinningTime = Math.floor((CurrentWinningTime+0.1)*100)/100;
         Text += "\nTIMER: "+CurrentWinningTime+"\n";
         CalculateLeadingProbablity();
+        SeeStatsForCurrentHorses();
     }
 
     //the following calaclulates the Leading horses' probablilty to win.
@@ -571,6 +582,17 @@ public class Race {
         }
         //System.out.println(addText);
         Text += addText;
+    }
+
+    private void SeeStatsForCurrentHorses(){
+        //AvgSpeeds = new ArrayList<>();
+        for (int i = 0; i < NumberOfHorsesInt; i++) {
+            Horse h = horses.get(i+1);
+            if(h.hasFallen()){ continue;}
+            //AvgSpeeds.add(Math.floor((CurrentWinningTime/h.getDistanceTravelled())*100)/100);
+            if(showAvgSpeed){ Text += h.getName() + "'s AVG SPEED: "+ Math.floor((CurrentWinningTime/h.getDistanceTravelled())*100)/100+"Sps\n";}
+        }
+
     }
 
     
