@@ -6,7 +6,7 @@ import java.lang.Math;
  * for a given distance
  * 
  * @author McFarewell
- * @version 1.0
+ * @version 1.0 
  */
 public class Race
 {
