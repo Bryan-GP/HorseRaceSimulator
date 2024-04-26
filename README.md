@@ -29,7 +29,7 @@ This project was built to simulate horse racing and betting and to analyse the o
 1. Open Your favourite IDE
 2. Open the terminal and type the following command: `git clone https://github.com/Bryan-GP/HorseRaceSimulator`
 3. to run the project type the following command: `cd part2`
-4. then type the following command: `java Testing`
+4. then type the following command: `java Program`
 
 ## Using the Horse Racing Simulator
 - Press start to begin the race (pressing start will make 2 horses race by default)
