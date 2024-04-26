@@ -2,7 +2,6 @@
 
 # Horse Race Simulator (Object Oriented Programming Project)
 
-
 ## Welcome to the Horse Racing Simulation project, a Java-based application that simulates a horse race with customizable options. 
 
 This project was built to simulate horse racing and betting and to analyse the outcome of the horse races. This project is a GUI which allows the user to customise the way that the horse racing is done.
@@ -22,6 +21,10 @@ This project was built to simulate horse racing and betting and to analyse the o
 - Horse Racing Simulation
 - includes simple instructions on boot up
 
+## Technologies Used
+- Java
+- Java Swing
+
 ## Installation
 1. Open Your favourite IDE
 2. Open the terminal and type the following command: `git clone https://github.com/Bryan-GP/HorseRaceSimulator`
@@ -35,11 +38,6 @@ This project was built to simulate horse racing and betting and to analyse the o
 
 ## Known Bugs
 - No known bugs
-
-## Technologies Used
-- Java
-- Java Swing
-
 
 
 
