@@ -18,10 +18,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class Race {
-    private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();
+    //main Frame and things connected to it
     private JFrame frame = new JFrame("HORSE RACING SIMULATION"); 
     private JTextArea RaceOutput;
-
     private JScrollPane scrollPane;
     private JLabel fontLabel;
     private JSpinner fontSizeSpinner;
@@ -33,35 +32,46 @@ public class Race {
     private JMenuItem saveItem;
     private JMenuItem exitItem;
 
+    //horse custumisation instance variables
     private JMenu RaceOptions;
     private JMenuItem NumberOfHorses;
     private int NumberOfHorsesInt = 2;
     private JMenuItem CostumiseHorses;
     private JMenuItem CostumiseTrack;
 
+    //virtual betting instance variables
     private JMenu VirtualBetting;
-    private boolean VirtualBettingUp; //TODO Make a Virtual Betting system
-    //private ArrayList<Integer> OddsToWin;
+    private boolean VirtualBettingUp;
     private Horse HorseBetted;
     private int BetAmount;
     private JMenuItem PlaceBet;
+    private int Coins = 100; //TODO add Currency to Virtual betting system.
 
+    //button to start the race
     private JButton StartButton;
 
+    //instance variables needed throughout the class
+    private double CurrentWinningTime;
+    private LinkedHashMap<Integer, ArrayList<Double>> WiningTimesForCurrentHorses = new LinkedHashMap<>(); //TODO add Timer
+    private LinkedHashMap<Integer, Horse> horses = new LinkedHashMap<>();
     private int TrackLength = 20;
     private char TrackChar = '=';
     private String Text;
     private boolean finished;
     private int numberFallen = 0;
-    private static final double DefaultConfidence = 0.5;
-    private static final char DefaultSymbol = '\u265E';
-    private static final String DefaultName = "HORSE";
+    private final double DefaultConfidence = 0.5;
+    private final char DefaultSymbol = '\u265E';
+    private final String DefaultName = "HORSE";
+    private Horse DefaultHorse1 = new Horse(DefaultSymbol,DefaultName+"1",DefaultConfidence);
+    private Horse DefaultHorse2 = new Horse(DefaultSymbol,DefaultName+"2",DefaultConfidence);
     
     public Race(){
 
         //default values for Horses.
-        horses.put(1,new Horse(DefaultSymbol,DefaultName+"1",DefaultConfidence));
-        horses.put(2,new Horse(DefaultSymbol,DefaultName+"2",DefaultConfidence));
+        horses.put(1,DefaultHorse1);
+        horses.put(2,DefaultHorse2);
+        WiningTimesForCurrentHorses.put(1, new ArrayList<Double>());
+        WiningTimesForCurrentHorses.put(2, new ArrayList<Double>());
 
         //making the frame
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -131,7 +141,8 @@ public class Race {
             if(response == JFileChooser.APPROVE_OPTION){
                 File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
                 try (PrintWriter writer = new PrintWriter(file)) {
-                    writer.println(RaceOutput.getText());
+                    //writer.print(WiningTimesForCurrentHorses.toString())//TODO save the times and stuff
+                    //writer.println(RaceOutput.getText());
                 } 
                 catch (FileNotFoundException e1) { }
             }
@@ -201,7 +212,7 @@ public class Race {
         frame.setVisible(true);
     }
 
-    public synchronized void ChooseNumberOfHorses(){
+    public void ChooseNumberOfHorses(){
         JFrame ChooseNumberOfHorsesFrame = new JFrame();
         JPanel panel2 = new JPanel();
         panel2.setBackground(new Color(243, 235, 233)); // Light Gray
@@ -209,10 +220,17 @@ public class Race {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         JComboBox<Integer> nHorses = new JComboBox<>(new Integer[] {2,3,4,5,6,7,8,9,10});
+        nHorses.setSelectedItem(NumberOfHorsesInt);
         JLabel NumberOfHorsesLabel = new JLabel("Number of Horses: ");
         JButton submitButton = new JButton("Submit");
         submitButton.addActionListener(e -> { 
-            this.NumberOfHorsesInt = nHorses.getSelectedIndex()+2;
+            NumberOfHorsesInt = nHorses.getSelectedIndex()+2;
+            //make it so that the number of horses
+            horses = new LinkedHashMap<>();
+            for(int i=0; i<this.NumberOfHorsesInt; i++){
+                horses.put((i+1), new Horse( DefaultSymbol, "HORSE"+(i+1), DefaultConfidence) );
+                WiningTimesForCurrentHorses.put(i+1, new ArrayList<>());
+            }
             ChooseNumberOfHorsesFrame.dispose();
         });
         gbc.gridx = 0;
@@ -231,17 +249,11 @@ public class Race {
         ChooseNumberOfHorsesFrame.setVisible(true);
     }
 
-    public synchronized void CustomiseHorsesWindow(){
+    public void CustomiseHorsesWindow(){
         JFrame CustomiseHorsesFrame = new JFrame("Customise Horses");
-        double DefaultConfidence = 0.5;
-        char DefaultSymbol = '\u265E';
         ArrayList<JButton> HorseButtons = new ArrayList<>();;
-        horses = new LinkedHashMap<>();
         JPanel panel = new JPanel(new GridLayout(this.NumberOfHorsesInt+2,1)); //added 1 for the submit button
-        for(int i=0; i<this.NumberOfHorsesInt; i++){
-            HorseButtons.add(new JButton("HORSE"+(i+1)));
-            horses.put((i+1), new Horse( DefaultSymbol, "HORSE"+(i+1), DefaultConfidence) );
-        }
+        for(int i=0; i<this.NumberOfHorsesInt; i++){ HorseButtons.add(new JButton("HORSE"+(i+1))); }
         for(int i=0; i<HorseButtons.size(); i++){
             JButton b = HorseButtons.get(i);
             Horse h = horses.get(i+1);
@@ -257,12 +269,17 @@ public class Race {
         JButton RandomiseButton = new JButton("RANDOMISE");
         RandomiseButton.setBackground(new Color(333));
         RandomiseButton.addActionListener(e->{
-            for (int i = 1; i <= NumberOfHorsesInt; i++) {
+            System.out.println(horses.toString());
+            for (int i = 0; i < NumberOfHorsesInt; i++) {
+                Horse h = horses.get(i+1);
                 Random rand = new Random();
                 int random = rand.nextInt(2)+1;
                 char randomSymbol = random == 1? DefaultSymbol: '\u2658';
                 double randomConfidence = Math.floor((Math.random())*100)/100;
-                horses.replace(i, new Horse(randomSymbol, ""+DefaultName+i, randomConfidence));
+                //System.out.println(horses.toString());
+                h.setConfidence(randomConfidence);
+                h.setSymbol(randomSymbol);
+                //, new Horse(randomSymbol, ""+DefaultName+i, randomConfidence));
             }
             CustomiseHorsesFrame.dispose();
         });
@@ -279,7 +296,7 @@ public class Race {
         CustomiseHorsesFrame.setVisible(true);
     }
 
-    public synchronized void CustomiseTrack(){
+    public void CustomiseTrack(){
         JFrame CustomiseTrackFrame = new JFrame("Customise The Track");
         JPanel panel2 = new JPanel();
         panel2.setBackground(new Color(243, 235, 233)); // Light Gray
@@ -366,6 +383,7 @@ public class Race {
             JRadioButton horseBetButton = new JRadioButton(h.getName()+" ("+h.getConfidence()+")");
             group.add(horseBetButton);
             horseBetButton.addActionListener(e->{
+                VirtualBettingUp = true;
                 HorseBetted = h;
             });
             horseBetButtons.put(i,horseBetButton);
@@ -390,12 +408,9 @@ public class Race {
         gbc.gridy = 1;
         panel.add(ChooseHorseLabel);
         for(int i=1; i<=horseBetButtons.size(); i++){
-            gbc.gridx = 0;
-            gbc.gridy = i+1;
-            panel.add(horseBetButtons.get(i), gbc);
             gbc.gridx = 1;
             gbc.gridy = i+1;
-            panel.add(new JLabel(horses.get(i).getName()), gbc);
+            panel.add(horseBetButtons.get(i), gbc);
         }
         
         gbc.gridx = 2;
@@ -403,13 +418,23 @@ public class Race {
         panel.add(submitButton, gbc);
 
         PlaceBetFrame.add(panel , BorderLayout.CENTER);
-        PlaceBetFrame.setSize(1000,420);
+        PlaceBetFrame.setSize(1000,700);
         PlaceBetFrame.setVisible(true);
     }
 
 
-    public synchronized void startRaceGUI(){
+    private void checkIfBetWon(Horse winner){
+        if(winner.equals(HorseBetted)){ 
+            Text += "\nYOUR "  + BetAmount + " BET WINS!"; 
+        }else{
+            Text += "\nYour bet of " + BetAmount + " has been lost.";
+        }
+    }
+
+
+    private void startRaceGUI(){
         finished = false;
+        CurrentWinningTime = 0;
         for( int i=1; i<=horses.size(); i++ ){ 
             Horse h = horses.get(i);
             h.pickUpHorse();
@@ -424,6 +449,13 @@ public class Race {
                         finished = true;
                         updateRace();
                         Text += "And the winner is " + h.getName();
+                        if(VirtualBettingUp) { 
+                            Text += "\n\nYOUR BET: "+HorseBetted.getName();
+                            checkIfBetWon(h); 
+                        }
+                        WiningTimesForCurrentHorses.get(i).add(CurrentWinningTime);
+                        System.out.println(WiningTimesForCurrentHorses.toString());
+                        
                         RaceOutput.setText(Text);
                         return;
                     }
@@ -439,6 +471,7 @@ public class Race {
                 for( int i=1; i<=horses.size(); i++ ){ moveHorse(horses.get(i)); } 
                 try{
                     updateRace();
+                    if(VirtualBettingUp){ Text += "\n\nYOUR BET: "+HorseBetted.getName();}
                     RaceOutput.setText(Text);
                     Thread.sleep(100);
                 }catch(InterruptedException e){
@@ -456,7 +489,7 @@ public class Race {
      * 
      * @param theHorse the horse to be moved
      */
-    private synchronized void moveHorse(Horse theHorse)
+    private void moveHorse(Horse theHorse)
     {
         //if the horse has fallen it cannot move, 
         //so only run if it has not fallen
@@ -486,7 +519,7 @@ public class Race {
      * @param theHorse The horse we are testing
      * @return true if the horse has won, false otherwise.
      */
-    private synchronized boolean raceWonBy(Horse theHorse)
+    private boolean raceWonBy(Horse theHorse)
     {
         if (theHorse.getDistanceTravelled() == TrackLength)
         {
@@ -499,12 +532,10 @@ public class Race {
         }
     }
     
-    /***
-     * Print the race on the terminal
-     */
-    private synchronized void updateRace()
+    //updates the TextVariable to be shown on the screen
+    private void updateRace()
     {
-        //System.out.print('\u000C');  //clear the terminal window
+        
         Text = "\n\n\n\n";
         
         multiplePrint(TrackChar,TrackLength); //top edge of track
@@ -516,9 +547,13 @@ public class Race {
         }
 
         multiplePrint(TrackChar,TrackLength); //bottom edge of track
-        Text += "\n" ;
-  
-        //the following calaclulates the Leading horses' probablilty to win.
+        CurrentWinningTime = Math.floor((CurrentWinningTime+0.1)*100)/100;
+        Text += "\nTIMER: "+CurrentWinningTime+"\n";
+        CalculateLeadingProbablity();
+    }
+
+    //the following calaclulates the Leading horses' probablilty to win.
+    private void CalculateLeadingProbablity(){
         String addText = "";
         double biggestProb = 0;
         double DistSum = 0;
@@ -528,13 +563,13 @@ public class Race {
         for (int i = 1; i <= horses.size(); i++) {
             if (horses.get(i).hasFallen()) { continue; }
             Horse h = horses.get(i);
-            double currentProb = numberFallen!=horses.size()?Math.floor((h.getDistanceTravelled()*(NumberOfHorsesInt-numberFallen)*h.getConfidence())/(DistSum*NumberOfHorsesInt-numberFallen)*(100))/100:1;
+            double currentProb = numberFallen!=horses.size()?Math.floor(((h.getDistanceTravelled()*((NumberOfHorsesInt-numberFallen))*h.getConfidence())/(DistSum*NumberOfHorsesInt-numberFallen)*(100)))/100:1;
             if ( currentProb > biggestProb ){
                 biggestProb = currentProb;
                 addText =  h.getName() + " is currently in the lead with a probability of " + biggestProb + "\n";
             }
         }
-        System.out.println(addText);
+        //System.out.println(addText);
         Text += addText;
     }
 
@@ -545,7 +580,7 @@ public class Race {
      * |           X                      |
      * to show how far the horse has run
      */
-    private synchronized void printLane(Horse theHorse)
+    private void printLane(Horse theHorse)
     {
         //calculate how many spaces are needed before
         //and after the horse
@@ -583,7 +618,7 @@ public class Race {
      * 
      * @param aChar the character to Print
      */
-    private synchronized void multiplePrint(char aChar, int times){
+    private void multiplePrint(char aChar, int times){
         int i = 0;
         while (i < times){
             Text +=  aChar ; 
